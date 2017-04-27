@@ -38,7 +38,7 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 		{
 			foreach (var icon in m_Icons)
 			{
-				var image = ((GameObject)Instantiate(m_IconPrefab, m_IconsContainer, false)).GetComponent<Image>();
+				var image = ObjectUtils.Instantiate(m_IconPrefab, m_IconsContainer, false).GetComponent<Image>();
 				image.sprite = icon;
 			}
 

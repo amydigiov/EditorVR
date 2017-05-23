@@ -7,7 +7,7 @@ namespace UnityEditor.Experimental.EditorVR.Modules
 {
 	sealed class DragAndDropModule : MonoBehaviour, IInterfaceConnector
 	{
-		readonly Dictionary<Transform, IDroppable> m_Droppables = new Dictionary<Transform, IDroppable>();
+		readonly Dictionary<Transform, GameObject> m_DropGameObjects = new Dictionary<Transform, GameObject>();
 		readonly Dictionary<Transform, IDropReceiver> m_DropReceivers = new Dictionary<Transform, IDropReceiver>();
 
 		readonly Dictionary<Transform, GameObject> m_HoverObjects = new Dictionary<Transform, GameObject>();
@@ -34,8 +34,16 @@ namespace UnityEditor.Experimental.EditorVR.Modules
 
 		object GetCurrentDropObject(Transform rayOrigin)
 		{
-			IDroppable droppable;
-			return m_Droppables.TryGetValue(rayOrigin, out droppable) ? droppable.GetDropObject() : null;
+			GameObject dropGameObject;
+			if (!m_DropGameObjects.TryGetValue(rayOrigin, out dropGameObject))
+				return null;
+			return GetDropObject(dropGameObject);
+		}
+
+		object GetDropObject(GameObject dropGameObject)
+		{
+			var droppable = dropGameObject.GetComponent<IDroppable>();
+			return droppable != null ? droppable.GetDropObject() : dropGameObject;
 		}
 
 		void SetCurrentDropReceiver(Transform rayOrigin, IDropReceiver dropReceiver)
@@ -87,24 +95,22 @@ namespace UnityEditor.Experimental.EditorVR.Modules
 
 		public void OnDragStarted(GameObject gameObject, Transform rayOrigin)
 		{
-			var droppable = gameObject.GetComponent<IDroppable>();
-			if (droppable != null)
-				m_Droppables[rayOrigin] = droppable;
+			m_DropGameObjects[rayOrigin] = gameObject;
 		}
 
 		public void OnDragEnded(Transform rayOrigin)
 		{
-			if (!m_Droppables.ContainsKey(rayOrigin))
+			if (!m_DropGameObjects.ContainsKey(rayOrigin))
 				return;
-			var droppable = m_Droppables[rayOrigin];
-			if (droppable != null)
+			var dropGameObject = m_DropGameObjects[rayOrigin];
+			if (dropGameObject != null)
 			{
-				m_Droppables.Remove(rayOrigin);
+				m_DropGameObjects.Remove(rayOrigin);
 
 				var dropReceiver = GetCurrentDropReceiver(rayOrigin);
-				var dropObject = droppable.GetDropObject();
+				var dropObject = GetDropObject(dropGameObject);
 				if (dropReceiver != null && dropReceiver.CanDrop(dropObject))
-					dropReceiver.ReceiveDrop(droppable.GetDropObject());
+					dropReceiver.ReceiveDrop(dropObject);
 			}
 		}
 	}

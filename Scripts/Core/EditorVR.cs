@@ -130,10 +130,22 @@ namespace UnityEditor.Experimental.EditorVR.Core
 
 			var multipleRayInputModule = GetModule<MultipleRayInputModule>();
 			var dragAndDropModule = AddModule<DragAndDropModule>();
-			multipleRayInputModule.rayEntered += dragAndDropModule.OnRayEntered;
-			multipleRayInputModule.rayExited += dragAndDropModule.OnRayExited;
-			multipleRayInputModule.dragStarted += dragAndDropModule.OnDragStarted;
-			multipleRayInputModule.dragEnded += dragAndDropModule.OnDragEnded;
+			multipleRayInputModule.rayEntered += (gameObject, rayEventData) =>
+			{
+				dragAndDropModule.OnRayEntered(gameObject, rayEventData.rayOrigin);
+			};
+			multipleRayInputModule.rayExited += (gameObject, rayEventData) =>
+			{
+				dragAndDropModule.OnRayExited(gameObject, rayEventData.rayOrigin);
+			};
+			multipleRayInputModule.dragStarted += (gameObject, rayEventData) =>
+			{
+				dragAndDropModule.OnDragStarted(gameObject, rayEventData.rayOrigin);
+			};
+			multipleRayInputModule.dragEnded += (gameObject, rayEventData) =>
+			{
+				dragAndDropModule.OnDragEnded(gameObject, rayEventData.rayOrigin);
+			};
 
 			var tooltipModule = AddModule<TooltipModule>();
 			m_Interfaces.ConnectInterfaces(tooltipModule);

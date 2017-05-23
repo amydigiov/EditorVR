@@ -5,32 +5,12 @@ using UnityEngine;
 
 namespace UnityEditor.Experimental.EditorVR.Modules
 {
-	sealed class DragAndDropModule : MonoBehaviour, IInterfaceConnector
+	sealed class DragAndDropModule : MonoBehaviour
 	{
 		readonly Dictionary<Transform, GameObject> m_DropGameObjects = new Dictionary<Transform, GameObject>();
 		readonly Dictionary<Transform, IDropReceiver> m_DropReceivers = new Dictionary<Transform, IDropReceiver>();
 
 		readonly Dictionary<Transform, GameObject> m_HoverObjects = new Dictionary<Transform, GameObject>();
-
-		public void ConnectInterface(object obj, Transform rayOrigin = null)
-		{
-			var drag = obj as IDrag;
-			if (drag != null)
-			{
-				drag.dragStarted += OnDragStarted;
-				drag.dragEnded += OnDragEnded;
-			}
-		}
-
-		public void DisconnectInterface(object obj)
-		{
-			var drag = obj as IDrag;
-			if (drag != null)
-			{
-				drag.dragStarted -= OnDragStarted;
-				drag.dragEnded -= OnDragEnded;
-			}
-		}
 
 		object GetCurrentDropObject(Transform rayOrigin)
 		{

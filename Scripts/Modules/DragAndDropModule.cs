@@ -1,15 +1,36 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
+using UnityEditor.Experimental.EditorVR.Core;
 using UnityEngine;
 
 namespace UnityEditor.Experimental.EditorVR.Modules
 {
-	sealed class DragAndDropModule : MonoBehaviour
+	sealed class DragAndDropModule : MonoBehaviour, IInterfaceConnector
 	{
 		readonly Dictionary<Transform, IDroppable> m_Droppables = new Dictionary<Transform, IDroppable>();
 		readonly Dictionary<Transform, IDropReceiver> m_DropReceivers = new Dictionary<Transform, IDropReceiver>();
 
 		readonly Dictionary<Transform, GameObject> m_HoverObjects = new Dictionary<Transform, GameObject>();
+
+		public void ConnectInterface(object obj, Transform rayOrigin = null)
+		{
+			var drag = obj as IDrag;
+			if (drag != null)
+			{
+				drag.dragStarted += OnDragStarted;
+				drag.dragEnded += OnDragEnded;
+			}
+		}
+
+		public void DisconnectInterface(object obj)
+		{
+			var drag = obj as IDrag;
+			if (drag != null)
+			{
+				drag.dragStarted -= OnDragStarted;
+				drag.dragEnded -= OnDragEnded;
+			}
+		}
 
 		object GetCurrentDropObject(Transform rayOrigin)
 		{
@@ -71,9 +92,11 @@ namespace UnityEditor.Experimental.EditorVR.Modules
 				m_Droppables[rayOrigin] = droppable;
 		}
 
-		public void OnDragEnded(GameObject gameObject, Transform rayOrigin)
+		public void OnDragEnded(Transform rayOrigin)
 		{
-			var droppable = gameObject.GetComponent<IDroppable>();
+			if (!m_Droppables.ContainsKey(rayOrigin))
+				return;
+			var droppable = m_Droppables[rayOrigin];
 			if (droppable != null)
 			{
 				m_Droppables.Remove(rayOrigin);

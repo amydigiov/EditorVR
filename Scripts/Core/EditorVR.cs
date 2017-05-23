@@ -144,7 +144,7 @@ namespace UnityEditor.Experimental.EditorVR.Core
 			};
 			multipleRayInputModule.dragEnded += (gameObject, rayEventData) =>
 			{
-				dragAndDropModule.OnDragEnded(gameObject, rayEventData.rayOrigin);
+				dragAndDropModule.OnDragEnded(rayEventData.rayOrigin);
 			};
 
 			var tooltipModule = AddModule<TooltipModule>();

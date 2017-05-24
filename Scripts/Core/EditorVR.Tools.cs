@@ -88,6 +88,13 @@ namespace UnityEditor.Experimental.EditorVR.Core
 						AddToolToDeviceData(toolData, devices);
 
 						var tool = toolData.tool;
+
+						var gameObjectReferenceTool = tool as GameObjectReferenceTool;
+						if (gameObjectReferenceTool)
+						{
+							gameObjectReferenceTool.isRayActive = isRayActive;
+						}
+
 						var selectionTool = tool as SelectionTool;
 						if (selectionTool)
 						{

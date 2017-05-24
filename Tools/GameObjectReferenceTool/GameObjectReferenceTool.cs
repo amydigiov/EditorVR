@@ -14,6 +14,8 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 
 		GameObject m_ReferencedObject;
 		GameObject m_ReferenceProxyObject;
+		Vector3 m_PositionOffset;
+		Quaternion m_RotationOffset;
 
 		public Transform rayOrigin { private get; set; }
 		public ActionMap actionMap { get { return m_ActionMap; } }
@@ -40,6 +42,8 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 					consumeControl(gameObjectReferenceInput.drag);
 					m_ReferenceProxyObject = ObjectUtils.Instantiate(m_ReferencedObject);
 					// TODO: This should implement IDroppable so it can point to the original reference
+					MathUtilsExt.GetTransformOffset(
+						rayOrigin, m_ReferenceProxyObject.transform, out m_PositionOffset, out m_RotationOffset);
 				}
 			}
 
@@ -48,6 +52,11 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 				m_ReferencedObject = null;
 				if (m_ReferenceProxyObject != null)
 					ObjectUtils.Destroy(m_ReferenceProxyObject);
+			}
+
+			if (m_ReferenceProxyObject != null)
+			{
+				MathUtilsExt.SetTransformOffset(rayOrigin, m_ReferenceProxyObject.transform, m_PositionOffset, m_RotationOffset);
 			}
 		}
 

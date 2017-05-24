@@ -93,6 +93,9 @@ namespace UnityEditor.Experimental.EditorVR.Core
 						if (sceneObjectReferenceTool)
 						{
 							sceneObjectReferenceTool.isRayActive = isRayActive;
+							var dragAndDropModule = evr.GetModule<DragAndDropModule>();
+							sceneObjectReferenceTool.dragStarted += dragAndDropModule.OnDragStarted;
+							sceneObjectReferenceTool.dragEnded += dragAndDropModule.OnDragEnded;
 						}
 
 						var selectionTool = tool as SelectionTool;

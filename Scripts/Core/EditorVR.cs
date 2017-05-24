@@ -128,12 +128,8 @@ namespace UnityEditor.Experimental.EditorVR.Core
 
 			AddModule<KeyboardModule>();
 
-			var dragAndDropModule = AddModule<DragAndDropModule>();
-			var directSelection = GetNestedModule<DirectSelection>();
-			directSelection.dragStarted += dragAndDropModule.OnDragStarted;
-			directSelection.dragEnded += dragAndDropModule.OnDragEnded;
-
 			var multipleRayInputModule = GetModule<MultipleRayInputModule>();
+			var dragAndDropModule = AddModule<DragAndDropModule>();
 			multipleRayInputModule.rayEntered += (gameObject, rayEventData) =>
 			{
 				dragAndDropModule.OnRayEntered(gameObject, rayEventData.rayOrigin);

@@ -1,7 +1,6 @@
 #if UNITY_EDITOR && UNITY_EDITORVR
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor.Experimental.EditorVR.Extensions;
 using UnityEditor.Experimental.EditorVR.Modules;
 using UnityEditor.Experimental.EditorVR.Proxies;
@@ -22,8 +21,6 @@ namespace UnityEditor.Experimental.EditorVR.Core
 			public event Action<Transform, HashSet<Transform>> objectsGrabbed;
 			public event Action<Transform, Transform[]> objectsDropped;
 			public event Action<Transform, Transform> objectsTransferred;
-			public event Action<GameObject, Transform> dragStarted;
-			public event Action<Transform> dragEnded;
 
 			public DirectSelection()
 			{
@@ -157,19 +154,15 @@ namespace UnityEditor.Experimental.EditorVR.Core
 
 				objects.UnionWith(grabbedObjects);
 
+				// Detach the player head model so that it is not affected by its parent transform
 				foreach (var grabbedObject in grabbedObjects)
 				{
-					// Detach the player head model so that it is not affected by its parent transform
 					if (grabbedObject.CompareTag(k_VRPlayerTag))
 					{
 						grabbedObject.hideFlags = HideFlags.None;
 						grabbedObject.transform.parent = null;
 					}
 				}
-
-				// TODO: Handle drag and drop for multiple GameObjects
-				if (dragStarted != null)
-					dragStarted(grabbedObjects.Last().gameObject, rayOrigin);
 
 				if (objectsGrabbed != null)
 					objectsGrabbed(rayOrigin, grabbedObjects);
@@ -194,9 +187,6 @@ namespace UnityEditor.Experimental.EditorVR.Core
 					else
 						eventObjects.Add(grabbedObject);
 				}
-
-				if (dragEnded != null)
-					dragEnded(rayOrigin);
 
 				if (objects.Count == 0)
 					m_GrabbedObjects.Remove(rayOrigin);

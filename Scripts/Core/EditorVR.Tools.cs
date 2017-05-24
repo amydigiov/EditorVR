@@ -89,10 +89,10 @@ namespace UnityEditor.Experimental.EditorVR.Core
 
 						var tool = toolData.tool;
 
-						var gameObjectReferenceTool = tool as GameObjectReferenceTool;
-						if (gameObjectReferenceTool)
+						var sceneObjectReferenceTool = tool as SceneObjectReferenceTool;
+						if (sceneObjectReferenceTool)
 						{
-							gameObjectReferenceTool.isRayActive = isRayActive;
+							sceneObjectReferenceTool.isRayActive = isRayActive;
 						}
 
 						var selectionTool = tool as SelectionTool;

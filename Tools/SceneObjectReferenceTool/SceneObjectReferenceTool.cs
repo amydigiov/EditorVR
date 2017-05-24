@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEditor.Experimental.EditorVR.Utilities;
 using UnityEngine;
 using UnityEngine.InputNew;
 
 namespace UnityEditor.Experimental.EditorVR.Tools
 {
-	sealed class GameObjectReferenceTool : MonoBehaviour, ITool, IUsesRayOrigin, IUsesRaycastResults, ICustomActionMap,
+	sealed class SceneObjectReferenceTool : MonoBehaviour, ITool, IUsesRayOrigin, IUsesRaycastResults, ICustomActionMap,
 		ISetManipulatorsVisible, IIsHoveringOverUI
 	{
 		[SerializeField]
@@ -26,20 +25,20 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 			if (!IsActive())
 				return;
 
-			var gameObjectReferenceInput = (GameObjectReferenceInput)input;
+			var sceneObjectReferenceInput = (SceneObjectReferenceInput)input;
 
 			var hoveredObject = this.GetFirstGameObject(rayOrigin);
 			//if (!GetSelectionCandidate(ref hoveredObject))
 			//	return;
 
-			this.SetManipulatorsVisible(this, !gameObjectReferenceInput.drag.isHeld);
+			this.SetManipulatorsVisible(this, !sceneObjectReferenceInput.drag.isHeld);
 			
-			if (gameObjectReferenceInput.drag.wasJustPressed)
+			if (sceneObjectReferenceInput.drag.wasJustPressed)
 			{
 				m_ReferencedObject = hoveredObject;
 				if (m_ReferencedObject != null)
 				{
-					consumeControl(gameObjectReferenceInput.drag);
+					consumeControl(sceneObjectReferenceInput.drag);
 					m_ReferenceProxyObject = ObjectUtils.Instantiate(m_ReferencedObject);
 					// TODO: This should implement IDroppable so it can point to the original reference
 					MathUtilsExt.GetTransformOffset(
@@ -47,7 +46,7 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 				}
 			}
 
-			if (gameObjectReferenceInput.drag.wasJustReleased)
+			if (sceneObjectReferenceInput.drag.wasJustReleased)
 			{
 				m_ReferencedObject = null;
 				if (m_ReferenceProxyObject != null)

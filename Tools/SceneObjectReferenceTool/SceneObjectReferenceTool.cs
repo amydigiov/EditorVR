@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditor.Experimental.EditorVR.Extensions;
+using UnityEditor.Experimental.EditorVR.Helpers;
 using UnityEditor.Experimental.EditorVR.Utilities;
 using UnityEngine;
 using UnityEngine.InputNew;
@@ -38,12 +39,33 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 
 				m_SceneObjectProxy = ObjectUtils.Instantiate(hoveredObject).AddComponent<SceneObjectProxy>();
 				m_SceneObjectProxy.sceneObject = hoveredObject;
+				var sceneObjectProxyTransform = m_SceneObjectProxy.transform;
 				MathUtilsExt.GetTransformOffset(
-					rayOrigin, m_SceneObjectProxy.transform, out m_PositionOffset, out m_RotationOffset);
+					rayOrigin, sceneObjectProxyTransform, out m_PositionOffset, out m_RotationOffset);
 
-				var maxComponent = ObjectUtils.GetBounds(m_SceneObjectProxy.transform).size.MaxComponent();
+				var maxComponent = ObjectUtils.GetBounds(sceneObjectProxyTransform).size.MaxComponent();
 				var scaleFactor = 1 / maxComponent;
-				m_SceneObjectProxy.transform.localScale = m_SceneObjectProxy.transform.localScale * scaleFactor;
+				sceneObjectProxyTransform.localScale = sceneObjectProxyTransform.localScale * scaleFactor;
+
+				// Turn off expensive render settings
+				foreach (var renderer in sceneObjectProxyTransform.GetComponentsInChildren<Renderer>())
+				{
+					renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+					renderer.receiveShadows = false;
+					renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+					renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+				}
+
+				// Turn off lights
+				foreach (var light in sceneObjectProxyTransform.GetComponentsInChildren<Light>())
+				{
+					light.enabled = false;
+				}
+
+				// Disable any SmoothMotion that may be applied to a cloned scene object
+				var smoothMotion = m_SceneObjectProxy.GetComponent<SmoothMotion>();
+				if (smoothMotion != null)
+					smoothMotion.enabled = false;
 
 				if (dragStarted != null)
 					dragStarted(m_SceneObjectProxy.gameObject, rayOrigin);

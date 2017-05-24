@@ -8,14 +8,12 @@ using UnityEngine.InputNew;
 namespace UnityEditor.Experimental.EditorVR.Tools
 {
 	sealed class SceneObjectReferenceTool : MonoBehaviour, ITool, IUsesRayOrigin, IUsesRaycastResults, ICustomActionMap,
-		ISetManipulatorsVisible
+		ISetManipulatorsVisible, IGetPointerLength
 	{
 		[SerializeField]
 		ActionMap m_ActionMap;
 
 		SceneObjectProxy m_SceneObjectProxy;
-		Vector3 m_PositionOffset;
-		Quaternion m_RotationOffset;
 
 		public Transform rayOrigin { private get; set; }
 		public ActionMap actionMap { get { return m_ActionMap; } }
@@ -40,8 +38,6 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 				m_SceneObjectProxy = ObjectUtils.Instantiate(hoveredObject).AddComponent<SceneObjectProxy>();
 				m_SceneObjectProxy.sceneObject = hoveredObject;
 				var sceneObjectProxyTransform = m_SceneObjectProxy.transform;
-				MathUtilsExt.GetTransformOffset(
-					rayOrigin, sceneObjectProxyTransform, out m_PositionOffset, out m_RotationOffset);
 
 				var maxComponent = ObjectUtils.GetBounds(sceneObjectProxyTransform).size.MaxComponent();
 				var scaleFactor = 1 / maxComponent;
@@ -84,7 +80,8 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 
 			if (m_SceneObjectProxy != null)
 			{
-				MathUtilsExt.SetTransformOffset(rayOrigin, m_SceneObjectProxy.transform, m_PositionOffset, m_RotationOffset);
+				MathUtilsExt.SetTransformOffset(
+					rayOrigin, m_SceneObjectProxy.transform, Vector3.forward * this.GetPointerLength(rayOrigin), Quaternion.identity);
 			}
 		}
 

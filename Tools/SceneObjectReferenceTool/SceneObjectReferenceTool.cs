@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor.Experimental.EditorVR.Extensions;
 using UnityEditor.Experimental.EditorVR.Utilities;
 using UnityEngine;
 using UnityEngine.InputNew;
@@ -34,10 +35,15 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 			if (sceneObjectReferenceInput.drag.wasJustPressed && hoveredObject != null)
 			{
 				consumeControl(sceneObjectReferenceInput.drag);
+
 				m_SceneObjectProxy = ObjectUtils.Instantiate(hoveredObject).AddComponent<SceneObjectProxy>();
 				m_SceneObjectProxy.sceneObject = hoveredObject;
 				MathUtilsExt.GetTransformOffset(
 					rayOrigin, m_SceneObjectProxy.transform, out m_PositionOffset, out m_RotationOffset);
+
+				var maxComponent = ObjectUtils.GetBounds(m_SceneObjectProxy.transform).size.MaxComponent();
+				var scaleFactor = 1 / maxComponent;
+				m_SceneObjectProxy.transform.localScale = m_SceneObjectProxy.transform.localScale * scaleFactor;
 
 				if (dragStarted != null)
 					dragStarted(m_SceneObjectProxy.gameObject, rayOrigin);

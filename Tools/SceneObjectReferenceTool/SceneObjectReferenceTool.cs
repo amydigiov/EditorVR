@@ -8,7 +8,7 @@ using UnityEngine.InputNew;
 namespace UnityEditor.Experimental.EditorVR.Tools
 {
 	sealed class SceneObjectReferenceTool : MonoBehaviour, ITool, IUsesRayOrigin, IUsesRaycastResults, ICustomActionMap,
-		ISetManipulatorsVisible, IGetPointerLength
+		ISetManipulatorsVisible, IGetPointerLength, IUsesViewerScale
 	{
 		[SerializeField]
 		ActionMap m_ActionMap;
@@ -40,7 +40,7 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 				var sceneObjectProxyTransform = m_SceneObjectProxy.transform;
 
 				var maxComponent = ObjectUtils.GetBounds(sceneObjectProxyTransform).size.MaxComponent();
-				var scaleFactor = 1 / maxComponent;
+				var scaleFactor = this.GetViewerScale() / maxComponent / 10f;
 				sceneObjectProxyTransform.localScale = sceneObjectProxyTransform.localScale * scaleFactor;
 
 				// Turn off expensive render settings

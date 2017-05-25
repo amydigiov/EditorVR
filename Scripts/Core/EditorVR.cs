@@ -146,6 +146,9 @@ namespace UnityEditor.Experimental.EditorVR.Core
 			{
 				dragAndDropModule.OnDragEnded(rayEventData.rayOrigin);
 			};
+			var directSelection = GetNestedModule<DirectSelection>();
+			directSelection.dragStarted += dragAndDropModule.OnDragStarted;
+			directSelection.dragEnded += dragAndDropModule.OnDragEnded;
 
 			var tooltipModule = AddModule<TooltipModule>();
 			m_Interfaces.ConnectInterfaces(tooltipModule);

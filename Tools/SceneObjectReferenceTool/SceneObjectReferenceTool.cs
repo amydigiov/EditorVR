@@ -8,7 +8,7 @@ using UnityEngine.InputNew;
 namespace UnityEditor.Experimental.EditorVR.Tools
 {
 	sealed class SceneObjectReferenceTool : MonoBehaviour, ITool, IUsesRayOrigin, IUsesRaycastResults, ICustomActionMap,
-		ISetManipulatorsVisible, IGetPointerLength, IUsesViewerScale
+		ISetManipulatorsVisible, IGetPointerLength, IUsesViewerScale, ISelectObject
 	{
 		[SerializeField]
 		ActionMap m_ActionMap;
@@ -27,6 +27,8 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 				return;
 
 			var hoveredObject = this.GetFirstGameObject(rayOrigin);
+			if (!GetSelectionCandidate(ref hoveredObject))
+				return;
 
 			var sceneObjectReferenceInput = (SceneObjectReferenceInput)input;
 			this.SetManipulatorsVisible(this, !sceneObjectReferenceInput.drag.isHeld);
@@ -83,6 +85,20 @@ namespace UnityEditor.Experimental.EditorVR.Tools
 				MathUtilsExt.SetTransformOffset(
 					rayOrigin, m_SceneObjectProxy.transform, Vector3.forward * this.GetPointerLength(rayOrigin), Quaternion.identity);
 			}
+		}
+
+		bool GetSelectionCandidate(ref GameObject hoveredObject)
+		{
+			var selectionCandidate = this.GetSelectionCandidate(hoveredObject, true);
+
+			// Can't select this object (it might be locked or static)
+			if (hoveredObject && !selectionCandidate)
+				return false;
+
+			if (selectionCandidate)
+				hoveredObject = selectionCandidate;
+
+			return true;
 		}
 
 		bool IsActive()

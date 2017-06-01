@@ -19,7 +19,7 @@ namespace UnityEditor.Experimental.EditorVR.Modules
 			return GetDropObject(dropGameObject);
 		}
 
-		object GetDropObject(GameObject dropGameObject)
+		static object GetDropObject(GameObject dropGameObject)
 		{
 			var droppable = dropGameObject.GetComponent<IDroppable>();
 			return droppable != null ? droppable.GetDropObject() : dropGameObject;
